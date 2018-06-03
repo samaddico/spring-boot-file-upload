@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Demo</title>
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width" />
+        <link type="text/css" rel="stylesheet" href="assets/css/bootstrap.min.css"/>
+        <link type="text/css" rel="stylesheet" href="assets/css/bootstrap-vue.css"/>
+        <style type="text/css">
+            body {
+                background-color: #ddd;
+            }
+            div#content > div.row {
+                margin-top: 150px;
+            }
+            .card-body {
+                flex: 1 1 auto;
+                padding-top: 2.5rem;
+                padding-left: 3.5rem;
+                padding-right: 3.5rem;
+                padding-bottom: 3.5rem;
+            }
+        </style>
+    </head>
+    <body class="body">
+    <b-container id="content">
+        <b-row class="justify-content-center">
+            <b-col class="" sm="6">
+                <b-card class="text-center">
+                    <div v-if="response.message">
+                        <b-alert variant="info" show>{{ response.message }}</b-alert>
+                    </div>
+                    <b-form @submit="onSubmit" @reset="onReset">
+                        <div role="group" class="input-group mb-4">
+                            <b-form-file v-model="form.file" :state="Boolean(form.file)" ref="fileinput" placeholder="Choose a file..." required></b-form-file>
+                        </div>
+                        <button type="submit" class="btn btn-danger">UPLOAD</button>
+                        <button type="reset" class="btn btn-info ">RESET</button>
+                    </b-form>
+                </b-card>
+            </b-col>
+        </b-row>
+    </b-container>    
+</body>
+<script src="assets/js/vue.js"></script>
+<script src="assets/js/polyfill.min.js"></script>
+<script src="assets/js/bootstrap-vue.js"></script>
+<script>
+    var vm = new Vue({
+        el: "#content",
+        data: function() {
+            return {
+            form:{
+              file: null
+            },
+            status: false,
+            message: '',
+            response: {}
+         }
+        },
+        computed: {
+        },
+        methods: {
+        onSubmit : function (evt){
+
+            evt.preventDefault();
+            var xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                    getResponse(xhr);
+               }
+            }
+            var formData = new FormData();
+            formData.append("file", this.form.file);
+
+            xhr.open('POST', '/upload', true);
+
+            xhr.send(formData)
+
+            xhr.onerror = function () {
+                this.response.message = 'Oops,Error occured uploading file';
+            };
+        },
+        onReset: function (evt) {
+           evt.preventDefault();
+           this.$refs.fileinput.reset();
+           this.response = null;
+       }
+      }
+    })
+    
+    function getResponse(xhr){
+        if (!xhr.responseType) {
+           vm.response = JSON.parse(xhr.responseText);
+        }     
+    }
+</script>
+</html>
