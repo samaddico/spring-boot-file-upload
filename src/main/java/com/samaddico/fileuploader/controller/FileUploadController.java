@@ -40,8 +40,6 @@ public class FileUploadController {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());//get file extension
         JSONResponse response = new JSONResponse();
 
-        
-
         fileService.store(file);//save file on file system
 
         //persist file to db here
@@ -50,7 +48,7 @@ public class FileUploadController {
 
         //prepare reesponse here
         response.setStatus(true);
-        response.setMessage("File " +fileName+ " successfully uploaded");
+        response.setMessage("File " + fileName + " successfully uploaded");
         response.setResult(newFile);
 
         return response;
@@ -70,7 +68,7 @@ public class FileUploadController {
         jSONResponse.setResult(e.getMessage());
         return jSONResponse;
     }
-    
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public JSONResponse error(Exception e) {
